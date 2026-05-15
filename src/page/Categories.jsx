@@ -70,25 +70,13 @@ const Categories = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      
-      {/* HEADER */}
-      <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-800">
-            Categories
-          </h1>
-
-          <p className="text-gray-500 mt-1">
-            Add, Edit & Manage Categories
-          </p>
-        </div>
-      </div>
+    <div className="min-h-screen bg-gray-100 px-2">
+    
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* ADD / EDIT SECTION */}
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 h-fit">
+        <div className="bg-white  border border-gray-100 p-6 h-fit">
           
           <div className="flex items-center gap-3 mb-6">
             <div className="p-3 bg-blue-100 rounded-xl text-blue-600">
@@ -146,7 +134,7 @@ const Categories = () => {
         </div>
 
         {/* CATEGORY LIST */}
-        <div className="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+        <div className="lg:col-span-2 bg-white border border-gray-100 p-6">
           
           {/* TOP */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">

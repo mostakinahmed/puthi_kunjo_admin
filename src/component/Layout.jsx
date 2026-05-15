@@ -9,10 +9,10 @@ const Layout = () => {
     <div className="flex w-full min-h-screen bg-gray-100 flex-row">
 
       {/* Fixed Sidebar */}
-      <div className=" left-0 top-0 h-screen w-[17%] z-50">
+      <div className=" left-0 top-0 h-screen w-[14%] z-50">
         <Sidebar />
       </div>
-      <div className="w-full">
+      <div className="w-[85%]">
         <Navbar />
         <Outlet />
       </div>
