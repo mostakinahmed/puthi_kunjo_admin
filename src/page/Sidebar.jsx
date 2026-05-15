@@ -49,7 +49,7 @@ const Home = () => {
     {
       id: "dashboard",
       label: "Dashboard",
-      path: "/dashboard",
+      path: "/",
       icon: <LayoutDashboard size={20} />,
     },
     {

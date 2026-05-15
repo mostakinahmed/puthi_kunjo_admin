@@ -15,7 +15,7 @@ function App() {
       
       {/* Layout with Sidebar */}
       <Route element={<Layout />}>
-        <Route path="/dashboard" element={<AdminDashboard />} />
+        <Route path="/" element={<AdminDashboard />} />
         <Route path="/manage-books" element={<ManageBooks />} />
                 <Route path="/add-books" element={<AddBook />} />
                 <Route path="/categories" element={<Categories />} />
