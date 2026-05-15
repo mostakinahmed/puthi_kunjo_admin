@@ -71,7 +71,6 @@ const Categories = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 px-2">
-    
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         

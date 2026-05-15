@@ -1,245 +1,333 @@
 import React, { useState } from "react";
-import {
-    Upload,
-    BookOpen,
-    DollarSign,
-    Layers,
-    FileText,
-    Image as ImageIcon,
-} from "lucide-react";
+import { Upload, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const AddBook = () => {
-    const [bookData, setBookData] = useState({
-        title: "",
-        author: "",
-        category: "",
-        price: "",
-        stock: "",
-        description: "",
-        image: null,
-    });
+  const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
+  const [form, setForm] = useState({
+    title: "",
+    author: "",
+    description: "",
+    price: "",
+    discount: 0,
+    stock: 0,
 
-        setBookData({
-            ...bookData,
-            [name]: value,
-        });
-    };
+    // CATEGORY (dropdown)
+    category: "",
 
-    const handleImage = (e) => {
-        setBookData({
-            ...bookData,
-            image: e.target.files[0],
-        });
-    };
+    // ARRAYS
+    tags: [""],
+    images: [""] ,
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    // STATUS
+    isNewArrival: false,
+    isDiscounted: false,
+    isTopSelling: false,
+    isFeatured: false,
 
-        console.log(bookData);
+    // SPECIFICATION
+    specification: {
+      publisher: "",
+      isbn: "",
+      edition: "",
+      pages: "",
+      country: "",
+      language: "",
+    },
+  });
 
-        alert("Book Added Successfully!");
-    };
+  // BASIC INPUT
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
 
-    const navigate = useNavigate();
-    return (
-        <div className="min-h-screen bg-gray-100 p-6">
-            <div className="max-w-7xl mx-auto bg-white  shadow-lg overflow-hidden">
+    setForm((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
-                {/* Header */}
-                <div className="bg-slate-900 text-white px-8 py-4">
-                    <h1 className="text-2xl font-bold flex items-center gap-3">
-                        <BookOpen className="text-blue-400" />
-                        Add New Book
-                    </h1>
+  // SPEC INPUT
+  const handleSpecChange = (e) => {
+    const { name, value } = e.target;
 
-                 
-                </div>
+    setForm((prev) => ({
+      ...prev,
+      specification: {
+        ...prev.specification,
+        [name]: value,
+      },
+    }));
+  };
 
-                {/* Form */}
-                <form
-                    onSubmit={handleSubmit}
-                    className="p-8 grid grid-cols-1 md:grid-cols-2 gap-6"
-                >
-                    {/* Book Title */}
-                    <div>
-                        <label className="block text-sm font-semibold mb-2">
-                            Book Title
-                        </label>
+  // TAGS
+  const handleTagChange = (index, value) => {
+    const updated = [...form.tags];
+    updated[index] = value;
 
-                        <div className="relative">
-                            <BookOpen
-                                size={18}
-                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                            />
+    setForm((prev) => ({
+      ...prev,
+      tags: updated,
+    }));
+  };
 
-                            <input
-                                type="text"
-                                name="title"
-                                value={bookData.title}
-                                onChange={handleChange}
-                                placeholder="Enter book title"
-                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 ring-blue-100"
-                            />
-                        </div>
-                    </div>
+  const addTag = () => {
+    setForm((prev) => ({
+      ...prev,
+      tags: [...prev.tags, ""],
+    }));
+  };
 
-                    {/* Author */}
-                    <div>
-                        <label className="block text-sm font-semibold mb-2">
-                            Author Name
-                        </label>
+  const removeTag = (index) => {
+    const updated = form.tags.filter((_, i) => i !== index);
 
-                        <input
-                            type="text"
-                            name="author"
-                            value={bookData.author}
-                            onChange={handleChange}
-                            placeholder="Enter author name"
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 ring-blue-100"
-                        />
-                    </div>
+    setForm((prev) => ({
+      ...prev,
+      tags: updated.length ? updated : [""],
+    }));
+  };
 
-                    {/* Category */}
-                    <div>
-                        <label className="block text-sm font-semibold mb-2">
-                            Category
-                        </label>
+  // IMAGES
+  const handleImageChange = (index, value) => {
+    const updated = [...form.images];
+    updated[index] = value;
 
-                        <div className="relative">
-                            <Layers
-                                size={18}
-                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                            />
+    setForm((prev) => ({
+      ...prev,
+      images: updated,
+    }));
+  };
 
-                            <select
-                                name="category"
-                                value={bookData.category}
-                                onChange={handleChange}
-                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 ring-blue-100 bg-white"
-                            >
-                                <option value="">Select Category</option>
-                                <option value="Islamic">Islamic</option>
-                                <option value="Science">Science</option>
-                                <option value="Programming">Programming</option>
-                                <option value="History">History</option>
-                            </select>
-                        </div>
-                    </div>
+  const addImage = () => {
+    setForm((prev) => ({
+      ...prev,
+      images: [...prev.images, ""],
+    }));
+  };
 
-                    {/* Price */}
-                    <div>
-                        <label className="block text-sm font-semibold mb-2">
-                            Price
-                        </label>
+  const removeImage = (index) => {
+    const updated = form.images.filter((_, i) => i !== index);
 
-                        <div className="relative">
-                            <DollarSign
-                                size={18}
-                                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                            />
+    setForm((prev) => ({
+      ...prev,
+      images: updated.length ? updated : [""],
+    }));
+  };
 
-                            <input
-                                type="number"
-                                name="price"
-                                value={bookData.price}
-                                onChange={handleChange}
-                                placeholder="Enter price"
-                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 ring-blue-100"
-                            />
-                        </div>
-                    </div>
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log(form);
+  };
 
-                    {/* Stock */}
-                    <div>
-                        <label className="block text-sm font-semibold mb-2">
-                            Stock Quantity
-                        </label>
+  return (
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl overflow-hidden">
 
-                        <input
-                            type="number"
-                            name="stock"
-                            value={bookData.stock}
-                            onChange={handleChange}
-                            placeholder="Available stock"
-                            className="w-full px-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 ring-blue-100"
-                        />
-                    </div>
-
-                    {/* Image Upload */}
-                    <div>
-                        <label className="block text-sm font-semibold mb-2">
-                            Book Cover
-                        </label>
-
-                        <label className="flex items-center gap-3 border border-dashed border-gray-300 rounded-xl px-4 py-3 cursor-pointer hover:border-blue-400 transition-all">
-                            <ImageIcon className="text-gray-500" size={20} />
-
-                            <span className="text-gray-500 text-sm">
-                                {bookData.image
-                                    ? bookData.image.name
-                                    : "Upload Book Image"}
-                            </span>
-
-                            <input
-                                type="file"
-                                hidden
-                                accept="image/*"
-                                onChange={handleImage}
-                            />
-                        </label>
-                    </div>
-
-                    {/* Description */}
-                    <div className="md:col-span-2">
-                        <label className="block text-sm font-semibold mb-2">
-                            Description
-                        </label>
-
-                        <div className="relative">
-                            <FileText
-                                size={18}
-                                className="absolute left-3 top-4 text-gray-400"
-                            />
-
-                            <textarea
-                                rows="5"
-                                name="description"
-                                value={bookData.description}
-                                onChange={handleChange}
-                                placeholder="Write book description..."
-                                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl outline-none focus:ring-2 ring-blue-100 resize-none"
-                            ></textarea>
-                        </div>
-                    </div>
-
-                    {/* Submit Button */}
-                    <div className="md:col-span-2 flex justify-end gap-5">
-
-                        <button
-                            type="button"
-                            onClick={() => navigate("/manage-books")}
-                            className="bg-red-600 hover:bg-red-700 text-white px-8 py-2.5 rounded-xl font-bold shadow-md transition-all active:scale-95"
-                        >
-                            Cancel
-                        </button>
-
-                        <button
-                            type="submit"
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-md transition-all active:scale-95"
-                        >
-                            <Upload size={18} />
-                            Add Book
-                        </button>
-
-                    </div>
-                </form>
-            </div>
+        {/* HEADER */}
+        <div className="bg-slate-900 text-white px-8 py-5">
+          <h1 className="text-2xl font-bold flex items-center gap-3">
+            <BookOpen className="text-blue-400" />
+            Add New Book
+          </h1>
         </div>
-    );
+
+        <form onSubmit={handleSubmit} className="p-8 space-y-10">
+
+          {/* BASIC INFO */}
+          <section>
+            <h2 className="text-xl font-bold mb-4">Basic Information</h2>
+
+            <div className="grid md:grid-cols-2 gap-5">
+
+              {/* TITLE */}
+              <div>
+                <label className="block mb-1">Book Title</label>
+                <input
+                  name="title"
+                  value={form.title}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* AUTHOR */}
+              <div>
+                <label className="block mb-1">Author</label>
+                <input
+                  name="author"
+                  value={form.author}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* CATEGORY DROPDOWN */}
+              <div>
+                <label className="block mb-1">Category</label>
+                <select
+                  name="category"
+                  value={form.category}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2"
+                >
+                  <option value="">Select Category</option>
+                  <option value="fiction">Fiction</option>
+                  <option value="non-fiction">Non-Fiction</option>
+                  <option value="science">Science</option>
+                  <option value="history">History</option>
+                  <option value="education">Education</option>
+                </select>
+              </div>
+
+              {/* DESCRIPTION */}
+              <div className="md:col-span-2">
+                <label className="block mb-1">Description</label>
+                <textarea
+                  name="description"
+                  value={form.description}
+                  onChange={handleChange}
+                  rows={4}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+
+            </div>
+          </section>
+
+          {/* TAGS */}
+          <section>
+            <h2 className="text-xl font-bold mb-4">Tags</h2>
+
+            {form.tags.map((tag, index) => (
+              <div key={index} className="flex gap-3 mb-2">
+                <input
+                  value={tag}
+                  onChange={(e) => handleTagChange(index, e.target.value)}
+                  className="flex-1 border rounded-lg px-3 py-2"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeTag(index)}
+                  className="bg-red-500 text-white px-3 rounded-lg"
+                >
+                  X
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addTag}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+            >
+              + Add Tag
+            </button>
+          </section>
+
+          {/* SPECIFICATION */}
+          <section>
+            <h2 className="text-xl font-bold mb-4">Specification</h2>
+
+            <div className="grid md:grid-cols-2 gap-5">
+
+              {Object.keys(form.specification).map((key) => (
+                <div key={key}>
+                  <label className="block mb-1 capitalize">{key}</label>
+                  <input
+                    name={key}
+                    value={form.specification[key]}
+                    onChange={handleSpecChange}
+                    className="w-full border rounded-lg px-3 py-2"
+                  />
+                </div>
+              ))}
+
+            </div>
+          </section>
+
+          {/* IMAGES */}
+          <section>
+            <h2 className="text-xl font-bold mb-4">Images</h2>
+
+            {form.images.map((img, index) => (
+              <div key={index} className="flex gap-3 mb-2">
+                <input
+                  value={img}
+                  onChange={(e) => handleImageChange(index, e.target.value)}
+                  className="flex-1 border rounded-lg px-3 py-2"
+                />
+                <button
+                  type="button"
+                  onClick={() => removeImage(index)}
+                  className="bg-red-500 text-white px-3 rounded-lg"
+                >
+                  X
+                </button>
+              </div>
+            ))}
+
+            <button
+              type="button"
+              onClick={addImage}
+              className="bg-blue-600 text-white px-4 py-2 rounded-lg"
+            >
+              + Add Image
+            </button>
+          </section>
+
+          {/* STATUS */}
+          <section>
+            <h2 className="text-xl font-bold mb-4">Status</h2>
+
+            <div className="flex flex-wrap gap-6">
+
+              <label>
+                <input type="checkbox" name="isNewArrival" onChange={handleChange} />
+                {" "}New Arrival
+              </label>
+
+              <label>
+                <input type="checkbox" name="isDiscounted" onChange={handleChange} />
+                {" "}Discounted
+              </label>
+
+              <label>
+                <input type="checkbox" name="isTopSelling" onChange={handleChange} />
+                {" "}Top Selling
+              </label>
+
+              <label>
+                <input type="checkbox" name="isFeatured" onChange={handleChange} />
+                {" "}Featured
+              </label>
+
+            </div>
+          </section>
+
+          {/* ACTIONS */}
+          <div className="flex justify-end gap-4 pt-4 border-t">
+
+            <button
+              type="button"
+              onClick={() => navigate("/manage-books")}
+              className="px-6 py-2 bg-gray-300 rounded-lg"
+            >
+              Cancel
+            </button>
+
+            <button
+              type="submit"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
+            >
+              Save Book
+            </button>
+
+          </div>
+
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default AddBook;
