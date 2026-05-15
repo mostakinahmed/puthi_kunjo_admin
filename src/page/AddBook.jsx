@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Upload, BookOpen } from "lucide-react";
+import { BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 const AddBook = () => {
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
+  const initialForm = {
     title: "",
     author: "",
     description: "",
@@ -13,12 +14,12 @@ const AddBook = () => {
     discount: 0,
     stock: 0,
 
-    // CATEGORY (dropdown)
+    // CATEGORY
     category: "",
 
     // ARRAYS
     tags: [""],
-    images: [""] ,
+    images: [""],
 
     // STATUS
     isNewArrival: false,
@@ -35,7 +36,9 @@ const AddBook = () => {
       country: "",
       language: "",
     },
-  });
+  };
+
+  const [form, setForm] = useState(initialForm);
 
   // BASIC INPUT
   const handleChange = (e) => {
@@ -43,11 +46,16 @@ const AddBook = () => {
 
     setForm((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : value,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : type === "number"
+          ? Number(value)
+          : value,
     }));
   };
 
-  // SPEC INPUT
+  // SPECIFICATION INPUT
   const handleSpecChange = (e) => {
     const { name, value } = e.target;
 
@@ -114,17 +122,44 @@ const AddBook = () => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  // SUBMIT
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(form);
+
+    try {
+      const cleanedForm = {
+        ...form,
+        tags: form.tags.filter((tag) => tag.trim() !== ""),
+        images: form.images.filter((img) => img.trim() !== ""),
+      };
+
+      const response = await axios.post(
+        "http://localhost:5000/api/products/add",
+        cleanedForm
+      );
+
+      console.log(response.data);
+
+      alert("Book added successfully!");
+
+      setForm(initialForm);
+
+      navigate("/manage-books");
+    } catch (error) {
+      console.error(error);
+
+      alert(
+        error.response?.data?.message || "Failed to add book"
+      );
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-2xl overflow-hidden">
-
+      <div className="max-w-4xl mx-auto bg-white  overflow-hidden">
+        
         {/* HEADER */}
-        <div className="bg-slate-900 text-white px-8 py-5">
+        <div className="bg-slate-900 text-white px-8 py-3">
           <h1 className="text-2xl font-bold flex items-center gap-3">
             <BookOpen className="text-blue-400" />
             Add New Book
@@ -135,7 +170,9 @@ const AddBook = () => {
 
           {/* BASIC INFO */}
           <section>
-            <h2 className="text-xl font-bold mb-4">Basic Information</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Basic Information
+            </h2>
 
             <div className="grid md:grid-cols-2 gap-5">
 
@@ -143,10 +180,12 @@ const AddBook = () => {
               <div>
                 <label className="block mb-1">Book Title</label>
                 <input
+                  type="text"
                   name="title"
                   value={form.title}
                   onChange={handleChange}
                   className="w-full border rounded-lg px-3 py-2"
+                  required
                 />
               </div>
 
@@ -154,21 +193,25 @@ const AddBook = () => {
               <div>
                 <label className="block mb-1">Author</label>
                 <input
+                  type="text"
                   name="author"
                   value={form.author}
                   onChange={handleChange}
                   className="w-full border rounded-lg px-3 py-2"
+                  required
                 />
               </div>
 
-              {/* CATEGORY DROPDOWN */}
+              {/* CATEGORY */}
               <div>
                 <label className="block mb-1">Category</label>
+
                 <select
                   name="category"
                   value={form.category}
                   onChange={handleChange}
                   className="w-full border rounded-lg px-3 py-2"
+                  required
                 >
                   <option value="">Select Category</option>
                   <option value="fiction">Fiction</option>
@@ -179,9 +222,54 @@ const AddBook = () => {
                 </select>
               </div>
 
+              {/* PRICE */}
+              <div>
+                <label className="block mb-1">Price</label>
+
+                <input
+                  type="number"
+                  name="price"
+                  value={form.price}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2"
+                  required
+                />
+              </div>
+
+              {/* DISCOUNT */}
+              <div>
+                <label className="block mb-1">
+                  Discount (%)
+                </label>
+
+                <input
+                  type="number"
+                  name="discount"
+                  value={form.discount}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+
+              {/* STOCK */}
+              <div>
+                <label className="block mb-1">Stock</label>
+
+                <input
+                  type="number"
+                  name="stock"
+                  value={form.stock}
+                  onChange={handleChange}
+                  className="w-full border rounded-lg px-3 py-2"
+                />
+              </div>
+
               {/* DESCRIPTION */}
               <div className="md:col-span-2">
-                <label className="block mb-1">Description</label>
+                <label className="block mb-1">
+                  Description
+                </label>
+
                 <textarea
                   name="description"
                   value={form.description}
@@ -200,11 +288,16 @@ const AddBook = () => {
 
             {form.tags.map((tag, index) => (
               <div key={index} className="flex gap-3 mb-2">
+
                 <input
+                  type="text"
                   value={tag}
-                  onChange={(e) => handleTagChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleTagChange(index, e.target.value)
+                  }
                   className="flex-1 border rounded-lg px-3 py-2"
                 />
+
                 <button
                   type="button"
                   onClick={() => removeTag(index)}
@@ -212,6 +305,7 @@ const AddBook = () => {
                 >
                   X
                 </button>
+
               </div>
             ))}
 
@@ -226,19 +320,27 @@ const AddBook = () => {
 
           {/* SPECIFICATION */}
           <section>
-            <h2 className="text-xl font-bold mb-4">Specification</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Specification
+            </h2>
 
             <div className="grid md:grid-cols-2 gap-5">
 
               {Object.keys(form.specification).map((key) => (
                 <div key={key}>
-                  <label className="block mb-1 capitalize">{key}</label>
+
+                  <label className="block mb-1 capitalize">
+                    {key}
+                  </label>
+
                   <input
+                    type="text"
                     name={key}
                     value={form.specification[key]}
                     onChange={handleSpecChange}
                     className="w-full border rounded-lg px-3 py-2"
                   />
+
                 </div>
               ))}
 
@@ -247,15 +349,23 @@ const AddBook = () => {
 
           {/* IMAGES */}
           <section>
-            <h2 className="text-xl font-bold mb-4">Images</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Images
+            </h2>
 
             {form.images.map((img, index) => (
               <div key={index} className="flex gap-3 mb-2">
+
                 <input
+                  type="text"
+                  placeholder="Image URL"
                   value={img}
-                  onChange={(e) => handleImageChange(index, e.target.value)}
+                  onChange={(e) =>
+                    handleImageChange(index, e.target.value)
+                  }
                   className="flex-1 border rounded-lg px-3 py-2"
                 />
+
                 <button
                   type="button"
                   onClick={() => removeImage(index)}
@@ -263,6 +373,7 @@ const AddBook = () => {
                 >
                   X
                 </button>
+
               </div>
             ))}
 
@@ -277,28 +388,50 @@ const AddBook = () => {
 
           {/* STATUS */}
           <section>
-            <h2 className="text-xl font-bold mb-4">Status</h2>
+            <h2 className="text-xl font-bold mb-4">
+              Status
+            </h2>
 
             <div className="flex flex-wrap gap-6">
 
               <label>
-                <input type="checkbox" name="isNewArrival" onChange={handleChange} />
-                {" "}New Arrival
+                <input
+                  type="checkbox"
+                  name="isNewArrival"
+                  checked={form.isNewArrival}
+                  onChange={handleChange}
+                />{" "}
+                New Arrival
               </label>
 
               <label>
-                <input type="checkbox" name="isDiscounted" onChange={handleChange} />
-                {" "}Discounted
+                <input
+                  type="checkbox"
+                  name="isDiscounted"
+                  checked={form.isDiscounted}
+                  onChange={handleChange}
+                />{" "}
+                Discounted
               </label>
 
               <label>
-                <input type="checkbox" name="isTopSelling" onChange={handleChange} />
-                {" "}Top Selling
+                <input
+                  type="checkbox"
+                  name="isTopSelling"
+                  checked={form.isTopSelling}
+                  onChange={handleChange}
+                />{" "}
+                Top Selling
               </label>
 
               <label>
-                <input type="checkbox" name="isFeatured" onChange={handleChange} />
-                {" "}Featured
+                <input
+                  type="checkbox"
+                  name="isFeatured"
+                  checked={form.isFeatured}
+                  onChange={handleChange}
+                />{" "}
+                Featured
               </label>
 
             </div>
@@ -317,7 +450,7 @@ const AddBook = () => {
 
             <button
               type="submit"
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg flex items-center gap-2"
+              className="px-6 py-2 bg-blue-600 text-white rounded-lg"
             >
               Save Book
             </button>

@@ -1,11 +1,11 @@
 import { Routes, Route } from "react-router-dom";
 import "./index.css";
-
 import Layout from "./component/Layout";
 import AdminDashboard from "./page/Dashboard";
 import ManageBooks from "./page/ManageBooks";
 import AddBook from "./page/AddBook";
 import Categories from "./page/Categories";
+import EditBook from "./page/EditBook";
 
 function App() {
   
@@ -19,6 +19,7 @@ function App() {
         <Route path="/manage-books" element={<ManageBooks />} />
                 <Route path="/add-books" element={<AddBook />} />
                 <Route path="/categories" element={<Categories />} />
+                 <Route path="/edit-book/:id" element={<EditBook />} />
       </Route>
 
     </Routes>

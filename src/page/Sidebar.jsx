@@ -113,7 +113,7 @@ const Home = () => {
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50 text-gray-900 font-sans">
+    <div className="flex min-h-screen  bg-gray-50 text-gray-900 font-sans">
       
       {/* SIDEBAR */}
       <aside className="w-64 bg-slate-900 text-white flex flex-col fixed h-full z-50">
